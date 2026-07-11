@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { importRecords } from '../api';
 import { FIELDS } from '../types';
 import type { CsvRow } from '../types';
-import { btnPrimary, btnSecondary } from '../styles';
+import { btnPrimary, btnSecondary, colors } from '../styles';
 
 interface Props {
   siteId: number;
@@ -40,6 +40,7 @@ export default function CsvImport({ siteId, onImportComplete }: Props) {
   const [mapping, setMapping] = useState<Record<string, number>>({});
   const [extraColumns, setExtraColumns] = useState<{ header: string; colIndex: number; checked: boolean }[]>([]);
   const [status, setStatus] = useState('');
+  const [mode, setMode] = useState<'append' | 'replace'>('append');
   const [, setImportResult] = useState<{ inserted: number; skipped: number } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -131,7 +132,7 @@ export default function CsvImport({ siteId, onImportComplete }: Props) {
 
     setStatus('Importing...');
     try {
-      const result = await importRecords(siteId, rows);
+      const result = await importRecords(siteId, rows, mode);
       setImportResult(result);
       setStep('done');
       setStatus(`Imported ${result.inserted} rows${result.skipped > 0 ? ` (${result.skipped} duplicates skipped)` : ''}.`);
@@ -162,40 +163,52 @@ export default function CsvImport({ siteId, onImportComplete }: Props) {
 
   return (
     <div>
-      {step === 'drop' && (
-        <div
-          id="dropzone"
-          style={{
-            border: '2px dashed #c9c6bc',
-            borderRadius: 10,
-            padding: '30px 16px',
-            textAlign: 'center',
-            cursor: 'pointer',
-            marginBottom: 14,
-          }}
-          onClick={() => fileRef.current?.click()}
-          onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = '#2f6f4f'; }}
-          onDragLeave={(e) => { e.currentTarget.style.borderColor = '#c9c6bc'; }}
-          onDrop={(e) => {
-            e.preventDefault();
-            e.currentTarget.style.borderColor = '#c9c6bc';
-            if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
-          }}
-        >
-          <p><strong>Drag and drop CSV here</strong></p>
-          <p>or click to choose a file</p>
-          <input ref={fileRef} type="file" accept=".csv" style={{ display: 'none' }} onChange={(e) => {
-            if (e.target.files?.length) handleFile(e.target.files[0]);
-          }} />
-        </div>
-      )}
+          {step === 'drop' && (
+            <>
+              <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginBottom: 14 }}>
+                <label style={{ fontSize: 13, color: colors.text, display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}>
+                  <input type="radio" checked={mode === 'append'} onChange={() => setMode('append')} />
+                  Add new (skip duplicates)
+                </label>
+                <label style={{ fontSize: 13, color: colors.text, display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}>
+                  <input type="radio" checked={mode === 'replace'} onChange={() => setMode('replace')} />
+                  Replace all data
+                </label>
+              </div>
+              <div
+                id="dropzone"
+                style={{
+                  border: `2px dashed ${colors.border}`,
+                  borderRadius: 10,
+                  padding: '30px 16px',
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  color: colors.textSecondary,
+                }}
+                onClick={() => fileRef.current?.click()}
+                onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = '#2f6f4f'; }}
+                onDragLeave={(e) => { e.currentTarget.style.borderColor = colors.border; }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  e.currentTarget.style.borderColor = colors.border;
+                  if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+                }}
+              >
+                <p><strong>Drag and drop CSV here</strong></p>
+                <p>or click to choose a file</p>
+                <input ref={fileRef} type="file" accept=".csv" style={{ display: 'none' }} onChange={(e) => {
+                  if (e.target.files?.length) handleFile(e.target.files[0]);
+                }} />
+              </div>
+            </>
+          )}
 
       {step === 'map' && (
         <div>
-          <h3>Core columns</h3>
+          <h3 style={{ fontSize: 14, fontWeight: 600, color: colors.text, margin: '0 0 10px' }}>Core columns</h3>
           {FIELDS.map((f) => (
-            <div key={f.key} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0', borderBottom: '1px solid #e1dfd8' }}>
-              <label style={{ width: 200, fontWeight: 'bold' }}>
+            <div key={f.key} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0', borderBottom: `1px solid ${colors.borderLight}` }}>
+              <label style={{ width: 200, fontWeight: 500, fontSize: 13, color: colors.text }}>
                 {f.label} {f.required && <span style={{ color: '#a3312c' }}>*</span>}
               </label>
               <select

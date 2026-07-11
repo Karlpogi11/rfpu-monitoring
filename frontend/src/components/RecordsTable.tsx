@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { fetchRecords } from '../api';
 import type { Record, FilterParams } from '../types';
-import { btnSmall, inputSelect } from '../styles';
+import { btnSmall, inputSelect, colors } from '../styles';
 
 interface Props {
   siteId: number | null;
@@ -102,10 +102,10 @@ export default function RecordsTable({ siteId, refreshKey, filters, onFiltersCha
       )}
 
       {!loading && records.length > 0 && (
-        <div style={{ overflowX: 'auto', borderRadius: 10, border: '1px solid #e8e8ed' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, background: '#fff' }}>
+        <div style={{ overflowX: 'auto', borderRadius: 10, border: `1px solid ${colors.borderLight}` }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, background: colors.surface }}>
             <thead>
-              <tr style={{ background: '#f5f5f7', textAlign: 'left' }}>
+              <tr style={{ background: colors.headerBg, textAlign: 'left' }}>
                 <th style={th}>Order Id</th>
                 <th style={th}>Last Repair #</th>
                 <th style={th}>Device Description</th>
@@ -127,7 +127,7 @@ export default function RecordsTable({ siteId, refreshKey, filters, onFiltersCha
                   : undefined;
 
                 return (
-                  <tr key={r.id} style={{ background: bg, borderBottom: '1px solid #f0f0f0' }}>
+                  <tr key={r.id} style={{ background: bg, borderBottom: `1px solid ${colors.borderLight}` }}>
                     <td style={td}>{r.orderId}</td>
                     <td style={td}>{r.lastRepairNumber || ''}</td>
                     <td style={td}>{r.device || ''}</td>
@@ -139,7 +139,7 @@ export default function RecordsTable({ siteId, refreshKey, filters, onFiltersCha
                     <td style={td}>{r.handler || ''}</td>
                     <td style={{
                       ...td,
-                      color: r.flag === 'Should be Complete' ? '#c41e3a' : r.flag === 'Completed' ? '#1e7e34' : '#86868b',
+                      color: r.flag === 'Should be Complete' ? '#c41e3a' : r.flag === 'Completed' ? '#1e7e34' : colors.textSecondary,
                       fontWeight: r.flag ? 500 : 400,
                     }}>
                       {r.flag || ''}
@@ -151,10 +151,10 @@ export default function RecordsTable({ siteId, refreshKey, filters, onFiltersCha
           </table>
           <div style={{
             padding: '10px 16px',
-            background: '#fafafa',
-            borderTop: '1px solid #e8e8ed',
+            background: colors.headerBg,
+            borderTop: `1px solid ${colors.borderLight}`,
             fontSize: 12,
-            color: '#86868b',
+            color: colors.textSecondary,
             borderBottomLeftRadius: 10,
             borderBottomRightRadius: 10,
           }}>
@@ -170,22 +170,23 @@ const th: React.CSSProperties = {
   padding: '10px 12px',
   fontWeight: 600,
   whiteSpace: 'nowrap',
-  fontSize: 12,
-  color: '#6e6e73',
+  fontSize: 11,
+  color: colors.textSecondary,
   textTransform: 'uppercase',
-  letterSpacing: '0.5px',
-  borderBottom: '1px solid #e8e8ed',
+  letterSpacing: '0.8px',
+  borderBottom: `1px solid ${colors.borderLight}`,
 };
 
 const td: React.CSSProperties = {
   padding: '8px 12px',
   whiteSpace: 'nowrap',
+  color: colors.text,
 };
 
 const empty: React.CSSProperties = {
   textAlign: 'center',
   padding: '40px 20px',
-  color: '#86868b',
+  color: colors.textSecondary,
   fontSize: 14,
 };
 

@@ -75,13 +75,18 @@ router.get('/', async (req, res) => {
 
 router.post('/import', async (req, res) => {
   try {
-    const { site_id, rows } = req.body;
+    const { site_id, rows, mode } = req.body;
 
     if (!site_id || !Array.isArray(rows) || rows.length === 0) {
       return res.status(400).json({ error: 'site_id and rows[] are required' });
     }
 
     const db = getDb();
+
+    if (mode === 'replace') {
+      await db.delete(records).where(eq(records.siteId, site_id));
+    }
+
     let inserted = 0;
     let skipped = 0;
 

@@ -59,11 +59,11 @@ export async function fetchRecords(siteId: number, filters?: FilterParams): Prom
   return res.json();
 }
 
-export async function importRecords(siteId: number, rows: CsvRow[]): Promise<ImportResult> {
+export async function importRecords(siteId: number, rows: CsvRow[], mode?: 'append' | 'replace'): Promise<ImportResult> {
   const res = await fetch(`${BASE}/records/import`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ site_id: siteId, rows }),
+    body: JSON.stringify({ site_id: siteId, rows, mode }),
   });
   if (!res.ok) throw new Error('Import failed');
   return res.json();

@@ -4,7 +4,7 @@ import CsvImport from './components/CsvImport';
 import RecordsTable from './components/RecordsTable';
 import ExportButton from './components/ExportButton';
 import type { FilterParams } from './types';
-import { btnPrimary } from './styles';
+import { btnPrimary, colors } from './styles';
 
 export default function App() {
   const [siteId, setSiteId] = useState<number | null>(null);
@@ -13,7 +13,7 @@ export default function App() {
   const [filters, setFilters] = useState<FilterParams>({});
 
   return (
-    <div style={{ maxWidth: 1200, margin: '0 auto', padding: '20px 20px 48px' }}>
+    <div style={{ maxWidth: 1200, margin: '0 auto', padding: '20px 20px 48px', background: colors.bg, minHeight: '100vh' }}>
       <div style={{
         display: 'flex',
         alignItems: 'center',
@@ -22,7 +22,7 @@ export default function App() {
         flexWrap: 'wrap',
         gap: 10,
       }}>
-        <h1 style={{ margin: 0, fontSize: 24, fontWeight: 600, color: '#111827', letterSpacing: '-0.3px' }}>
+        <h1 style={{ margin: 0, fontSize: 24, fontWeight: 600, color: colors.text, letterSpacing: '-0.3px' }}>
           RFPU Site Monitor
         </h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
@@ -46,9 +46,9 @@ export default function App() {
         <div style={{
           marginBottom: 24,
           padding: 20,
-          border: '1px solid #e5e7eb',
-          borderRadius: 8,
-          background: '#fff',
+          border: `1px solid ${colors.borderLight}`,
+          borderRadius: 10,
+          background: colors.surface,
         }}>
           <CsvImport siteId={siteId} onImportComplete={() => { setRefreshKey((k) => k + 1); setShowImport(false); }} />
         </div>
