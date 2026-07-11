@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { fetchSites, createSite, renameSite, deleteSite } from '../api';
 import type { Site } from '../types';
 import { btnPrimary, btnSecondary, inputSelect } from '../styles';
@@ -20,9 +20,15 @@ export default function SiteSelector({ selectedId, onSelect }: Props) {
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<Mode>({ type: 'idle' });
   const [editValue, setEditValue] = useState('');
+  const [search, setSearch] = useState('');
   const ref = useRef<HTMLDivElement>(null);
 
   const selected = sites.find((s) => s.id === selectedId);
+
+  const filtered = useMemo(
+    () => sites.filter((s) => s.name.toLowerCase().includes(search.toLowerCase())),
+    [sites, search],
+  );
 
   function load() {
     setLoading(true);
@@ -136,7 +142,7 @@ export default function SiteSelector({ selectedId, onSelect }: Props) {
           borderRadius: 8,
           boxShadow: '0 4px 16px rgba(0,0,0,.1)',
           zIndex: 50,
-          overflow: 'hidden',
+          minWidth: 260,
         }}>
           {mode.type === 'adding' && (
             <div style={{ padding: 10, borderBottom: '1px solid #f3f4f6' }}>
@@ -184,8 +190,20 @@ export default function SiteSelector({ selectedId, onSelect }: Props) {
             </div>
           )}
 
+          {mode.type === 'idle' && (
+            <div style={{ padding: '6px 10px', borderBottom: '1px solid #f3f4f6' }}>
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search sites..."
+                style={{ ...inputSelect, width: '100%', padding: '5px 8px', fontSize: 12 }}
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
+          )}
+
           <div style={{ maxHeight: 240, overflowY: 'auto' }}>
-            {sites.map((s) => (
+            {filtered.map((s) => (
               <div
                 key={s.id}
                 onClick={() => select(s.id)}
