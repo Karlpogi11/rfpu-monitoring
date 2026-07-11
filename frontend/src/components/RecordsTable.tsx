@@ -121,9 +121,9 @@ export default function RecordsTable({ siteId, refreshKey, filters, onFiltersCha
             <tbody>
               {records.map((r) => {
                 const bg = r.flag === 'Should be Complete'
-                  ? '#fffafa'
+                  ? 'rgba(220,38,38,0.04)'
                   : r.flag === 'Completed'
-                  ? '#f4fcf4'
+                  ? 'rgba(22,163,74,0.04)'
                   : undefined;
 
                 return (
